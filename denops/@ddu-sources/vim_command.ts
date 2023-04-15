@@ -48,6 +48,7 @@ async function getCommand(denops: Denops, bufnr: number) {
     items.push({
       word: item,
       action: {
+        value:"\n",
         type: "command",
       },
     });
