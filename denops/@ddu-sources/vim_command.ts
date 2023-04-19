@@ -2,12 +2,10 @@ import {
   BaseSource,
   Item,
   SourceOptions,
-} from "https://deno.land/x/ddu_vim@v2.7.0/types.ts";
-import { Denops, fn, vars } from "https://deno.land/x/ddu_vim@v2.7.0/deps.ts";
+} from "https://deno.land/x/ddu_vim@v2.8.3/types.ts";
+import { Denops, fn } from "https://deno.land/x/ddu_vim@v2.8.3/deps.ts";
 
-type Params = {
-  bufnr: number;
-};
+type Params = Record<never, never>;
 
 export class Source extends BaseSource<Params> {
   override kind = "vim_type";
@@ -19,24 +17,18 @@ export class Source extends BaseSource<Params> {
   }): ReadableStream<Item[]> {
     return new ReadableStream<Item[]>({
       async start(controller) {
-        let bufnr = args.sourceParams.bufnr;
-        if (bufnr < 1) {
-          bufnr = await fn.bufnr(args.denops, "%") as number;
-        }
-        controller.enqueue(await getCommand(args.denops, args.sourceParams.bufnr))
+        controller.enqueue(await getCommand(args.denops));
         controller.close();
       },
     });
   }
 
   override params(): Params {
-    return {
-      bufnr: 1,
-    };
+    return {};
   }
 }
 
-async function getCommand(denops: Denops, bufnr: number) {
+async function getCommand(denops: Denops) {
   const items: Item[] = [];
   for (
     const item of (await fn.getcompletion(
@@ -48,7 +40,7 @@ async function getCommand(denops: Denops, bufnr: number) {
     items.push({
       word: item,
       action: {
-        value:"\n",
+        value: "\n",
         type: "command",
       },
     });
